@@ -1,0 +1,10 @@
+pandas
+numpy
+scikit-learn
+lightgbm
+category_encoders
+joblib
+tqdm
+shap
+matplotlib
+seaborn
