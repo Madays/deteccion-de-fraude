@@ -1,11 +1,11 @@
+import joblib
 from sklearn.ensemble import IsolationForest
-import numpy as np
 
 def train_isolation_forest(X, contamination=0.01, random_state=42):
-    iso = IsolationForest(contamination=contamination, random_state=random_state, n_jobs=-1)
-    iso.fit(X)
-    scores = -iso.decision_function(X)  # higher = more anomalous
-    return iso, scores
-
-def score_with_isoforest(iso, X):
-    return -iso.decision_function(X)
+    """
+    X: DataFrame con features ya procesadas (numéricas) - debe corresponder a selected_features
+    """
+    model = IsolationForest(n_estimators=200, contamination=contamination, random_state=random_state, n_jobs=-1)
+    model.fit(X)
+    scores = model.decision_function(X)
+    return model, scores

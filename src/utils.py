@@ -1,13 +1,11 @@
-import os, json
-from typing import Dict
-import joblib
+import os, json, joblib
 
-def ensure_dir(path: str):
+def ensure_dir(path):
     os.makedirs(path, exist_ok=True)
 
-def save_json(obj: Dict, path: str):
-    with open(path, 'w') as f:
+def save_json(obj, path):
+    with open(path, "w") as f:
         json.dump(obj, f, indent=2)
 
-def save_model(obj, path: str):
-    joblib.dump(obj, path)
+def save_model(model, path):
+    joblib.dump(model, path)
