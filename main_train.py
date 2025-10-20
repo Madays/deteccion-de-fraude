@@ -5,7 +5,7 @@ import numpy as np
 import joblib
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.metrics import roc_auc_score, precision_recall_curve
-from src import preprocess, feature_engineering, utils
+from src import preprocess, feature_engineering
 from src.anomaly_isoforest import train_isolation_forest
 import lightgbm as lgb
 
@@ -206,7 +206,7 @@ val_auc = roc_auc_score(y_hold, preds_hold)
 print(f"HOLDOUT AUC: {val_auc:.6f}")
 
 # -------------------------
-# 11) Calcular threshold óptimo usando OOF (no holdout)
+# 11) Calcular threshold óptimo usando OOF (no holdout) 
 # -------------------------
 precisions, recalls, thresholds = precision_recall_curve(train_base_raw['isFraud'].values, oof_preds)
 f1s = 2*(precisions*recalls)/(precisions+recalls+1e-9)
