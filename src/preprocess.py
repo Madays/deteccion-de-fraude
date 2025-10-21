@@ -1,47 +1,66 @@
 import pandas as pd
 import numpy as np
-from category_encoders import TargetEncoder, CountEncoder
-from sklearn.model_selection import train_test_split
+import joblib
+from category_encoders import TargetEncoder
 
-def load_data(data_dir):
-    tx = pd.read_csv(f"{data_dir}/train_transaction.csv", low_memory=False)
-    try:
-        idf = pd.read_csv(f"{data_dir}/train_identity.csv", low_memory=False)
-    except FileNotFoundError:
-        idf = None
-    return tx, idf
-
-def merge_identity(tx, idf):
-    if idf is None:
-        return tx
-    return tx.merge(idf, how='left', on='TransactionID')
-
-def basic_clean(df):
-    # Normalize column names (strip spaces)
+def basic_clean(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+    # Quitar columnas completamente vacías
+    null_cols = df.columns[df.isnull().all()].tolist()
+    if null_cols:
+        df = df.drop(columns=null_cols)
+    # strip column names
     df.columns = [c.strip() for c in df.columns]
-    # Example: dropcols with single unique value
-    nunique = df.nunique(dropna=False)
-    drop = nunique[nunique <= 1].index.tolist()
-    df = df.drop(columns=drop)
+    # Normalizar strings a lower-case
+    for col in df.select_dtypes(include=['object']).columns:
+        df[col] = df[col].astype(str).str.lower()
     return df
 
-def basic_impute(df, num_fill=-1, cat_fill='missing'):
-    # numeric columns
-    num_cols = df.select_dtypes(include=['number']).columns.tolist()
-    cat_cols = df.select_dtypes(include=['object']).columns.tolist()
-    df[num_cols] = df[num_cols].fillna(num_fill)
-    df[cat_cols] = df[cat_cols].fillna(cat_fill)
+def basic_impute(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+    # num -> median, cat -> 'missing'
+    for col in df.select_dtypes(include=[np.number]).columns:
+        df[col] = df[col].fillna(df[col].median())
+    for col in df.select_dtypes(exclude=[np.number]).columns:
+        df[col] = df[col].fillna('missing')
     return df
 
-def target_encode_train(df, categorical_cols, target_col='isFraud'):
-    enc = TargetEncoder(cols=categorical_cols, smoothing=0.3)
-    df[categorical_cols] = enc.fit_transform(df[categorical_cols], df[target_col])
-    return df, enc
+def fit_target_encoder(df: pd.DataFrame, cat_cols: list, target_col: str):
+    """
+    Ajusta TargetEncoder en cat_cols usando sólo filas con target no nulo.
+    Retorna (encoder, df_transformed).
+    """
+    df = df.copy()
+    # Filtrar filas con target no nulo
+    mask = df[target_col].notna()
+    df_fit = df.loc[mask, cat_cols].copy()
+    y_fit = df.loc[mask, target_col].values
 
-def apply_target_encoding(df, enc, categorical_cols):
-    df[categorical_cols] = enc.transform(df[categorical_cols])
+    # Si no hay columnas categóricas, devolvemos encoder None
+    if len(cat_cols) == 0:
+        encoder = None
+        return encoder, df
+
+    enc = TargetEncoder(cols=cat_cols, smoothing=0.3)
+    enc.fit(df_fit, y_fit)
+    # añadir metadata
+    enc.cols = cat_cols
+    # transformar todo el df (incluyendo filas que no se usaron para fit)
+    df[cat_cols] = enc.transform(df[cat_cols])
+    return enc, df
+
+def apply_target_encoding(df: pd.DataFrame, encoder, cat_cols: list):
+    """
+    Aplica encoder a df. Si falta alguna columna del encoder, la crea con 'missing'.
+    """
+    df = df.copy()
+    if encoder is None or len(cat_cols) == 0:
+        return df
+    missing = [c for c in cat_cols if c not in df.columns]
+    if missing:
+        fill = {c: 'missing' for c in missing}
+        fill_df = pd.DataFrame(fill, index=df.index)
+        df = pd.concat([df, fill_df], axis=1)
+    # ahora transformar (encoder.transform espera DataFrame con las columnas)
+    df[cat_cols] = encoder.transform(df[cat_cols])
     return df
-
-def create_holdout(df, test_size=0.2, random_state=42):
-    train, val = train_test_split(df, test_size=test_size, random_state=random_state, stratify=df['isFraud'])
-    return train.reset_index(drop=True), val.reset_index(drop=True)

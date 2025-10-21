@@ -205,3 +205,7 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Ignorar los archivos csv de data ya que algunos pesan más de 100MB
+# Ignore CSV files in data/ (including subdirectories)
+data/*.csv
