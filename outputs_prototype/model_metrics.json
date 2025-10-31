@@ -1,0 +1,78 @@
+{
+  "train_full_rows": 800,
+  "train_used_rows": 800,
+  "val_rows": 200,
+  "scale_pos_weight": 1.0887728459530026,
+  "ensemble_alpha": 0.85,
+  "youden_threshold": 0.4641955082611636,
+  "youden_metrics": {
+    "auc": 0.5350140056022409,
+    "precision": 0.5454545454545454,
+    "recall": 0.5510204081632653,
+    "f1": 0.5482233502538071,
+    "fpr": 0.441176470588231,
+    "tp": 54,
+    "fp": 45,
+    "tn": 57,
+    "fn": 44
+  },
+  "f1_threshold": 0.39321248217515525,
+  "f1_metrics": {
+    "auc": 0.5350140056022409,
+    "precision": 0.49,
+    "recall": 1.0,
+    "f1": 0.6577181208053692,
+    "fpr": 0.9999999999999902,
+    "tp": 98,
+    "fp": 102,
+    "tn": 0,
+    "fn": 0
+  },
+  "best_f1_value": 0.6577181208049276,
+  "advanced_ensemble_youden_threshold": 0.7206223420494617,
+  "advanced_ensemble_youden_metrics": {
+    "auc": 0.5291116446578632,
+    "precision": 0.578125,
+    "recall": 0.37755102040816324,
+    "f1": 0.4567901234567901,
+    "fpr": 0.26470588235293857,
+    "tp": 37,
+    "fp": 27,
+    "tn": 75,
+    "fn": 61
+  },
+  "advanced_ensemble_f1_threshold": 0.32295444216585956,
+  "advanced_ensemble_f1_metrics": {
+    "auc": 0.5291116446578632,
+    "precision": 0.49,
+    "recall": 1.0,
+    "f1": 0.6577181208053692,
+    "fpr": 0.9999999999999902,
+    "tp": 98,
+    "fp": 102,
+    "tn": 0,
+    "fn": 0
+  },
+  "advanced_ensemble_best_f1_value": 0.6577181208049276,
+  "calibrated_info": {
+    "calibrator_saved": true,
+    "thr_cal": 0.48308495881395697,
+    "metrics_cal": {
+      "auc": 0.5819327731092436,
+      "precision": 0.6097560975609756,
+      "recall": 0.5102040816326531,
+      "f1": 0.5555555555555556,
+      "fpr": 0.3137254901960754,
+      "tp": 50,
+      "fp": 32,
+      "tn": 70,
+      "fn": 48
+    }
+  },
+  "raw_auc_lgbm": 0.5330632252901161,
+  "raw_auc_rf": 0.566826730692277,
+  "raw_auc_xgb": 0.5423169267707082,
+  "raw_auc_cb": 0.5410164065626251,
+  "raw_auc_stacking": 0.4878451380552221,
+  "raw_auc_advanced_ensemble": 0.5291116446578632
+}
